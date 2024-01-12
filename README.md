@@ -100,7 +100,7 @@ For code run here are the few steps need to follow  try to create new terminal a
 
 
 ##### links
-    > Youtube   :- https://www.youtube.com/watch?v=qulWxmVzzWQ
+    > Youtube   :- https://youtu.be/qulWxmVzzWQ
 
     > Portfolio :- https://devmandloi0000.github.io
 
