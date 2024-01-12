@@ -96,3 +96,12 @@ For code run here are the few steps need to follow  try to create new terminal a
     > 2. Beautifulsoup
 
     > 3. NLTK Lib
+
+
+
+##### links
+    > Youtube   :- https://www.youtube.com/watch?v=qulWxmVzzWQ
+
+    > Portfolio :- https://devmandloi0000.github.io
+
+    > Linkedln  :- https://www.linkedin.com/in/devendra-mandloi-064b12195/
