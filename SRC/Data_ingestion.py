@@ -35,6 +35,7 @@ class data_ingestion:
 
             
     def secondary(self):
+        """Ingesting data from a given directory and scrape those link by using beautifulsoup and returns a dataframe"""
         data = pd.read_excel('E:\\For_Job\\Blackcoffer\\Code\\Notebook\\data\\Input.xlsx')
         df = data.copy()  # Create a copy to avoid modifying the original DataFrame
         updated_list = []
