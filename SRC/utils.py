@@ -112,7 +112,10 @@ class Col_Structure:
             
             
         df = pd.DataFrame(updated_list)
-        df.to_csv("E:\\For_Job\\Blackcoffer\\Code\\Notebook\\data\\Output.csv")
+        # Use portable path and ensure directory exists
+        output_dir = os.path.join("Notebook", "data")
+        os.makedirs(output_dir, exist_ok=True)
+        df.to_csv(os.path.join(output_dir, "Output.csv"), index=False)
         
         return df
             
