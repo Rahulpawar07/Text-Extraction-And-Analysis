@@ -4,5 +4,6 @@ nltk
 flask
 bs4
 urlopen
+openpyxl
 
 -e .

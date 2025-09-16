@@ -8,12 +8,12 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 lem = WordNetLemmatizer()
-nltk.data.path.append("C:\\Users\\PCLP\\AppData\\Roaming\\nltk_data")
+
+# Download NLTK data to user directory (portable)
 nltk.download('punkt')
+nltk.download('punkt_tab')
 nltk.download('stopwords')
 nltk.download('wordnet')
-
-#C:\Users\PCLP\AppData\Roaming\nltk_data
 
 stop_words = stopwords.words('english')
 
@@ -21,67 +21,69 @@ stop_words = stopwords.words('english')
 class Analysis:
     
     
-    def StopWords_data(self,file_path='E:\\For_Job\\Blackcoffer\\StopWords\\'):
-        stopword_auditor=open(f'{file_path}\\StopWords_Auditor.txt' ,'r',encoding='ISO-8859-1')
-        StopWords_Currencies=open(f'{file_path}\\StopWords_Currencies.txt' ,'r',encoding='ISO-8859-1')
-        StopWords_DatesandNumbers=open(f'{file_path}\\StopWords_DatesandNumbers.txt' ,'r',encoding='ISO-8859-1')
-        StopWords_Generic=open(f'{file_path}\\StopWords_Generic.txt' ,'r',encoding='ISO-8859-1')
-        StopWords_GenericLong=open(f'{file_path}\\StopWords_GenericLong.txt' ,'r',encoding='ISO-8859-1')
-        StopWords_Geographic=open(f'{file_path}\\StopWords_Geographic.txt' ,'r',encoding='ISO-8859-1')
-        StopWords_Names=open(f'{file_path}\\StopWords_Names.txt' ,'r',encoding='ISO-8859-1')
-        
-        return stopword_auditor,StopWords_Currencies,StopWords_DatesandNumbers,StopWords_Generic,StopWords_GenericLong,StopWords_Geographic,StopWords_Names
+    def StopWords_data(self, file_path=None):
+        """Use NLTK stopwords if external files are not available"""
+        try:
+            if file_path and os.path.exists(file_path):
+                # Try to load custom stopwords if path exists
+                stopword_auditor = open(os.path.join(file_path, 'StopWords_Auditor.txt'), 'r', encoding='ISO-8859-1')
+                StopWords_Currencies = open(os.path.join(file_path, 'StopWords_Currencies.txt'), 'r', encoding='ISO-8859-1')
+                StopWords_DatesandNumbers = open(os.path.join(file_path, 'StopWords_DatesandNumbers.txt'), 'r', encoding='ISO-8859-1')
+                StopWords_Generic = open(os.path.join(file_path, 'StopWords_Generic.txt'), 'r', encoding='ISO-8859-1')
+                StopWords_GenericLong = open(os.path.join(file_path, 'StopWords_GenericLong.txt'), 'r', encoding='ISO-8859-1')
+                StopWords_Geographic = open(os.path.join(file_path, 'StopWords_Geographic.txt'), 'r', encoding='ISO-8859-1')
+                StopWords_Names = open(os.path.join(file_path, 'StopWords_Names.txt'), 'r', encoding='ISO-8859-1')
+                return stopword_auditor, StopWords_Currencies, StopWords_DatesandNumbers, StopWords_Generic, StopWords_GenericLong, StopWords_Geographic, StopWords_Names
+            else:
+                # Fallback to NLTK stopwords
+                return stop_words, [], [], [], [], [], []
+        except (FileNotFoundError, IOError):
+            # Fallback to NLTK stopwords
+            return stop_words, [], [], [], [], [], []
     
     
-    def MasterDictionar_data(self,file_path='E:\\For_Job\\Blackcoffer\\MasterDictionary'):
-        
-        # Negative Dictionary 
-        file_neg = open(f'{file_path}\\negative-words.txt' ,'r',encoding='ISO-8859-1')
-        file_neg.seek(0)
-        neg_split = file_neg.read().split()
-        
-        # Positive Dictionary 
-        file_pos = open(f'{file_path}\\positive-words.txt' ,'r',encoding='ISO-8859-1')
-        file_pos.seek(0)
-        pos_split = file_pos.read().split()
-        
-        return pos_split,neg_split
+    def MasterDictionar_data(self, file_path=None):
+        """Use basic positive/negative word lists if external files are not available"""
+        try:
+            if file_path and os.path.exists(file_path):
+                # Try to load custom dictionaries if path exists
+                file_neg = open(os.path.join(file_path, 'negative-words.txt'), 'r', encoding='ISO-8859-1')
+                file_neg.seek(0)
+                neg_split = file_neg.read().split()
+                
+                file_pos = open(os.path.join(file_path, 'positive-words.txt'), 'r', encoding='ISO-8859-1')
+                file_pos.seek(0)
+                pos_split = file_pos.read().split()
+                
+                return pos_split, neg_split
+            else:
+                # Fallback to basic word lists
+                positive_words = ['good', 'great', 'excellent', 'amazing', 'wonderful', 'fantastic', 'awesome', 'perfect', 'best', 'love', 'like', 'happy', 'pleased', 'satisfied', 'successful']
+                negative_words = ['bad', 'terrible', 'awful', 'horrible', 'worst', 'hate', 'dislike', 'sad', 'angry', 'disappointed', 'failed', 'problem', 'issue', 'wrong', 'error']
+                return positive_words, negative_words
+        except (FileNotFoundError, IOError):
+            # Fallback to basic word lists
+            positive_words = ['good', 'great', 'excellent', 'amazing', 'wonderful', 'fantastic', 'awesome', 'perfect', 'best', 'love', 'like', 'happy', 'pleased', 'satisfied', 'successful']
+            negative_words = ['bad', 'terrible', 'awful', 'horrible', 'worst', 'hate', 'dislike', 'sad', 'angry', 'disappointed', 'failed', 'problem', 'issue', 'wrong', 'error']
+            return positive_words, negative_words
     
-    def text_corpus(self,x):
-        stopword_auditor,StopWords_Currencies,StopWords_DatesandNumbers,StopWords_Generic,StopWords_GenericLong,StopWords_Geographic,StopWords_Names = self.StopWords_data()
+    def text_corpus(self, x):
+        stopword_auditor, StopWords_Currencies, StopWords_DatesandNumbers, StopWords_Generic, StopWords_GenericLong, StopWords_Geographic, StopWords_Names = self.StopWords_data()
         
         string_format = str(x).lower()
-        lower_words=re.sub('[^a-zA-Z]+',' ',string_format).strip()
-        #lower_words = lower_words.split()
+        lower_words = re.sub('[^a-zA-Z]+', ' ', string_format).strip()
         token = word_tokenize(lower_words)
-        token_word = [t for t in token if t not in (stopword_auditor,StopWords_Currencies,StopWords_DatesandNumbers,StopWords_Generic,StopWords_GenericLong,StopWords_Geographic,StopWords_Names) ]
+        
+        # Combine all stopwords into a single list
+        all_stopwords = set(stop_words)  # Start with NLTK stopwords
+        if isinstance(stopword_auditor, list):
+            all_stopwords.update(stopword_auditor)
+        
+        token_word = [t for t in token if t not in all_stopwords]
         lemantizzed = [lem.lemmatize(w) for w in token_word]
         return lemantizzed
     
-    def count_syllables(self,word):
-        vowels = ("a","e","i","o","u","y")
-        count = 0
-        previous_char_was_vowel = False
-
-        for char in word:
-            if char in vowels:
-                if not previous_char_was_vowel:
-                    count += 1
-                previous_char_was_vowel = True
-            else:
-                previous_char_was_vowel = False
-
-        return count
-
-    def calculate_complexity_percentage(self,words):
-        #words = text.split()
-        num_complex_words = sum(1 for word in words if self.count_syllables(word) >= 2)
-        total_words = len(words)
-        no_of_complex_words = num_complex_words 
-        percentage_complex_words = (num_complex_words / total_words) * 100
-        return percentage_complex_words,no_of_complex_words
-    
-    def count_syllables(self,word):
+    def count_syllables(self, word):
         vowels = "aeiouy"
         exceptions = ["es", "ed"]
         count = 0
@@ -90,7 +92,6 @@ class Analysis:
         for exception in exceptions:
             if word.endswith(exception):
                 return 0  
-
 
         for char in word.lower():
             if char in vowels:
@@ -102,7 +103,14 @@ class Analysis:
 
         return count
 
-    def count_syllables_per_word(self,words):
+    def calculate_complexity_percentage(self, words):
+        num_complex_words = sum(1 for word in words if self.count_syllables(word) >= 2)
+        total_words = len(words)
+        no_of_complex_words = num_complex_words 
+        percentage_complex_words = (num_complex_words / total_words) * 100 if total_words > 0 else 0
+        return percentage_complex_words, no_of_complex_words
+
+    def count_syllables_per_word(self, words):
         syllables_per_word = {word: self.count_syllables(word) for word in words}
         return syllables_per_word
     

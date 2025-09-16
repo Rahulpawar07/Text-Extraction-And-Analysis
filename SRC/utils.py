@@ -15,8 +15,9 @@ from nltk.stem import WordNetLemmatizer
 lem = WordNetLemmatizer()
 
 
-nltk.data.path.append("C:\\Users\\PCLP\\AppData\\Roaming\\nltk_data")
+# Download NLTK data to user directory (portable)
 nltk.download('punkt')
+nltk.download('punkt_tab')
 nltk.download('stopwords')
 nltk.download('wordnet')
 stop_words = stopwords.words('english')
