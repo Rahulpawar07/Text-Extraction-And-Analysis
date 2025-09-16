@@ -3,9 +3,3 @@ Name: TEXT-ANALYSIS
 Version: 0.0.0.1
 Author: Dev_mandloi
 Author-email: devmandloi37@gmail.com
-Requires-Dist: pandas
-Requires-Dist: numpy
-Requires-Dist: nltk
-Requires-Dist: flask
-Requires-Dist: bs4
-Requires-Dist: urlopen
