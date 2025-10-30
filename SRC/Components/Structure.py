@@ -7,91 +7,130 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
+
+# Download NLTK data only once if not already present
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt', quiet=True)
+
+try:
+    nltk.data.find('corpora/stopwords')
+except LookupError:
+    nltk.download('stopwords', quiet=True)
+
+try:
+    nltk.data.find('corpora/wordnet')
+except LookupError:
+    nltk.download('wordnet', quiet=True)
+
+# Initialize lemmatizer and stop_words once at module level
 lem = WordNetLemmatizer()
-nltk.data.path.append("C:\\Users\\PCLP\\AppData\\Roaming\\nltk_data")
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
-
-#C:\Users\PCLP\AppData\Roaming\nltk_data
-
 stop_words = stopwords.words('english')
 
 
 class Analysis:
+    # Cache for stopwords and dictionaries to avoid repeated file I/O
+    _stopwords_cache = None
+    _master_dict_cache = None
+    _regex_pattern_cache = None
     
-    
-    def StopWords_data(self,file_path='E:\\For_Job\\Blackcoffer\\StopWords\\'):
-        stopword_auditor=open(f'{file_path}\\StopWords_Auditor.txt' ,'r',encoding='ISO-8859-1')
-        StopWords_Currencies=open(f'{file_path}\\StopWords_Currencies.txt' ,'r',encoding='ISO-8859-1')
-        StopWords_DatesandNumbers=open(f'{file_path}\\StopWords_DatesandNumbers.txt' ,'r',encoding='ISO-8859-1')
-        StopWords_Generic=open(f'{file_path}\\StopWords_Generic.txt' ,'r',encoding='ISO-8859-1')
-        StopWords_GenericLong=open(f'{file_path}\\StopWords_GenericLong.txt' ,'r',encoding='ISO-8859-1')
-        StopWords_Geographic=open(f'{file_path}\\StopWords_Geographic.txt' ,'r',encoding='ISO-8859-1')
-        StopWords_Names=open(f'{file_path}\\StopWords_Names.txt' ,'r',encoding='ISO-8859-1')
+    def StopWords_data(self, file_path=None):
+        """Load stopwords from files with caching for performance"""
+        if Analysis._stopwords_cache is not None:
+            return Analysis._stopwords_cache
+            
+        if file_path is None:
+            # Use relative path from project root
+            base_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            file_path = os.path.join(base_path, 'StopWords')
         
-        return stopword_auditor,StopWords_Currencies,StopWords_DatesandNumbers,StopWords_Generic,StopWords_GenericLong,StopWords_Geographic,StopWords_Names
+        # Load all stopwords into sets for faster lookups
+        stopwords_set = set()
+        stopword_files = [
+            'StopWords_Auditor.txt',
+            'StopWords_Currencies.txt',
+            'StopWords_DatesandNumbers.txt',
+            'StopWords_Generic.txt',
+            'StopWords_GenericLong.txt',
+            'StopWords_Geographic.txt',
+            'StopWords_Names.txt'
+        ]
+        
+        for filename in stopword_files:
+            filepath = os.path.join(file_path, filename)
+            if os.path.exists(filepath):
+                with open(filepath, 'r', encoding='ISO-8859-1') as f:
+                    stopwords_set.update(word.strip().lower() for word in f.read().split())
+        
+        Analysis._stopwords_cache = stopwords_set
+        return stopwords_set
     
     
-    def MasterDictionar_data(self,file_path='E:\\For_Job\\Blackcoffer\\MasterDictionary'):
+    def MasterDictionar_data(self, file_path=None):
+        """Load master dictionary with caching for performance"""
+        if Analysis._master_dict_cache is not None:
+            return Analysis._master_dict_cache
+            
+        if file_path is None:
+            # Use relative path from project root
+            base_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            file_path = os.path.join(base_path, 'MasterDictionary')
         
-        # Negative Dictionary 
-        file_neg = open(f'{file_path}\\negative-words.txt' ,'r',encoding='ISO-8859-1')
-        file_neg.seek(0)
-        neg_split = file_neg.read().split()
+        # Load dictionaries as sets for O(1) lookup instead of O(n)
+        neg_file_path = os.path.join(file_path, 'negative-words.txt')
+        pos_file_path = os.path.join(file_path, 'positive-words.txt')
         
-        # Positive Dictionary 
-        file_pos = open(f'{file_path}\\positive-words.txt' ,'r',encoding='ISO-8859-1')
-        file_pos.seek(0)
-        pos_split = file_pos.read().split()
+        neg_set = set()
+        pos_set = set()
         
-        return pos_split,neg_split
+        if os.path.exists(neg_file_path):
+            with open(neg_file_path, 'r', encoding='ISO-8859-1') as file_neg:
+                neg_set = set(word.strip().lower() for word in file_neg.read().split())
+        
+        if os.path.exists(pos_file_path):
+            with open(pos_file_path, 'r', encoding='ISO-8859-1') as file_pos:
+                pos_set = set(word.strip().lower() for word in file_pos.read().split())
+        
+        Analysis._master_dict_cache = (pos_set, neg_set)
+        return pos_set, neg_set
     
-    def text_corpus(self,x):
-        stopword_auditor,StopWords_Currencies,StopWords_DatesandNumbers,StopWords_Generic,StopWords_GenericLong,StopWords_Geographic,StopWords_Names = self.StopWords_data()
+    
+    def _get_regex_pattern(self):
+        """Cache compiled regex pattern for better performance"""
+        if Analysis._regex_pattern_cache is None:
+            Analysis._regex_pattern_cache = re.compile(r'[^a-zA-Z]+')
+        return Analysis._regex_pattern_cache
+    
+    def text_corpus(self, x):
+        """Optimized text preprocessing with cached stopwords"""
+        stopwords_set = self.StopWords_data()
         
         string_format = str(x).lower()
-        lower_words=re.sub('[^a-zA-Z]+',' ',string_format).strip()
-        #lower_words = lower_words.split()
+        # Use cached compiled regex pattern
+        pattern = self._get_regex_pattern()
+        lower_words = pattern.sub(' ', string_format).strip()
+        
         token = word_tokenize(lower_words)
-        token_word = [t for t in token if t not in (stopword_auditor,StopWords_Currencies,StopWords_DatesandNumbers,StopWords_Generic,StopWords_GenericLong,StopWords_Geographic,StopWords_Names) ]
+        # Filter using set membership (O(1)) instead of tuple membership
+        token_word = [t for t in token if t.lower() not in stopwords_set]
         lemantizzed = [lem.lemmatize(w) for w in token_word]
         return lemantizzed
     
-    def count_syllables(self,word):
-        vowels = ("a","e","i","o","u","y")
-        count = 0
-        previous_char_was_vowel = False
-
-        for char in word:
-            if char in vowels:
-                if not previous_char_was_vowel:
-                    count += 1
-                previous_char_was_vowel = True
-            else:
-                previous_char_was_vowel = False
-
-        return count
-
-    def calculate_complexity_percentage(self,words):
-        #words = text.split()
-        num_complex_words = sum(1 for word in words if self.count_syllables(word) >= 2)
-        total_words = len(words)
-        no_of_complex_words = num_complex_words 
-        percentage_complex_words = (num_complex_words / total_words) * 100
-        return percentage_complex_words,no_of_complex_words
     
-    def count_syllables(self,word):
+    def count_syllables(self, word):
+        """Count syllables in a word with special handling for exceptions"""
         vowels = "aeiouy"
         exceptions = ["es", "ed"]
         count = 0
         previous_char_was_vowel = False
 
+        # Check for exceptions
         for exception in exceptions:
             if word.endswith(exception):
                 return 0  
 
-
+        # Count vowel groups
         for char in word.lower():
             if char in vowels:
                 if not previous_char_was_vowel:
@@ -102,24 +141,26 @@ class Analysis:
 
         return count
 
-    def count_syllables_per_word(self,words):
-        syllables_per_word = {word: self.count_syllables(word) for word in words}
-        return syllables_per_word
+    def calculate_complexity_percentage(self, words):
+        """Calculate percentage of complex words (2+ syllables)"""
+        num_complex_words = sum(1 for word in words if self.count_syllables(word) >= 2)
+        total_words = len(words)
+        no_of_complex_words = num_complex_words 
+        percentage_complex_words = (num_complex_words / total_words) * 100 if total_words > 0 else 0
+        return percentage_complex_words, no_of_complex_words
+
+    def count_syllables_per_word(self, words):
+        """Optimized syllable counting per word"""
+        return {word: self.count_syllables(word) for word in words}
     
-    def Personal_pronoun_count(self,words_list):
-        list_of_words = ['I', 'we', 'my' ,'ours','us' ]
-        list_words_counts = 0
-        for words in words_list:
-            if words in list_of_words:
-                list_words_counts += 1
-        return list_words_counts
+    def Personal_pronoun_count(self, words_list):
+        """Count personal pronouns using set for O(1) lookup"""
+        pronouns_set = {'i', 'we', 'my', 'ours', 'us'}
+        return sum(1 for word in words_list if word.lower() in pronouns_set)
     
-    def Average_Word_Length(self,words):
-        count = 0
-        for i in words:
-            for j in i:
-                count += 1
-            
-        return count
+    def Average_Word_Length(self, words):
+        """Calculate total character count efficiently"""
+        # Use sum with generator expression instead of nested loops
+        return sum(len(word) for word in words)
 
     
