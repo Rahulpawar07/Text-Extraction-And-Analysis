@@ -119,8 +119,8 @@ class Analysis:
         token = word_tokenize(lower_words)
         # Filter using set membership (O(1)) instead of tuple membership
         token_word = [t for t in token if t.lower() not in stopwords_set]
-        lemantizzed = [lem.lemmatize(w) for w in token_word]
-        return lemantizzed
+        lemmatized = [lem.lemmatize(w) for w in token_word]
+        return lemmatized
     
     
     def count_syllables(self, word):
