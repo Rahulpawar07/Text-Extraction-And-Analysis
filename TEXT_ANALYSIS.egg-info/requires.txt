@@ -1,6 +1,0 @@
-bs4
-flask
-nltk
-numpy
-pandas
-urlopen
