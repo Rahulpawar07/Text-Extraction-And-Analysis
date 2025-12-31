@@ -16,10 +16,9 @@ from nltk.stem import WordNetLemmatizer
 lem = WordNetLemmatizer()
 
 
-nltk.data.path.append("C:\\Users\\PCLP\\AppData\\Roaming\\nltk_data")
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
+nltk.download('punkt', quiet=True)
+nltk.download('stopwords', quiet=True)
+nltk.download('wordnet', quiet=True)
 stop_words = stopwords.words('english')
 
 
@@ -36,7 +35,7 @@ class data_ingestion:
             
     def secondary(self):
         """Ingesting data from a given directory and scrape those link by using beautifulsoup and returns a dataframe"""
-        data = pd.read_excel('E:\\For_Job\\Blackcoffer\\Code\\Notebook\\data\\Input.xlsx')
+        data = pd.read_excel(os.path.join("Notebook/data", "Input.xlsx"))
         df = data.copy()  # Create a copy to avoid modifying the original DataFrame
         updated_list = []
         No_Matching_Data = []
@@ -73,10 +72,11 @@ class data_ingestion:
                 
 
             filename = urllib.parse.quote_plus(url)
-            file_path = 'E:\For_Job\Blackcoffer\Code\Text_files'
+            file_path = 'Text_files'
+            os.makedirs(file_path, exist_ok=True)
             space = " "
                 
-            with open(f"{file_path}\{filename}.txt", 'w+',encoding='utf-8') as file1:
+            with open(os.path.join(file_path, f"{filename}.txt"), 'w+', encoding='utf-8') as file1:
                 file1.writelines(article_title)
                 file1.writelines(space)
                 if firstdata is None:
@@ -102,10 +102,11 @@ class data_ingestion:
                 firstdata = alldiv.text
                 
                 filename = urllib.parse.quote_plus(j)
-                file_path = 'E:\For_Job\Blackcoffer\Code\Text_files'
+                file_path = 'Text_files'
+                os.makedirs(file_path, exist_ok=True)
                 space = " "
                     
-                with open(f"{file_path}\{filename}.txt", 'w+') as file1:
+                with open(os.path.join(file_path, f"{filename}.txt"), 'w+', encoding='utf-8') as file1:
                     file1.writelines(article_title)
                     file1.writelines(space)
                     file1.writelines(firstdata)
@@ -134,7 +135,9 @@ class data_ingestion:
         merged_df = merged_df.dropna()
         merged_df.reset_index(drop=True, inplace=True)
         
-        merged_df.to_csv('E:\\For_Job\\Blackcoffer\\Code\\Notebook\\data\\final.csv', index=False)
+        output_dir = 'Notebook/data'
+        os.makedirs(output_dir, exist_ok=True)
+        merged_df.to_csv(os.path.join(output_dir, 'final.csv'), index=False)
         
         return merged_df
 

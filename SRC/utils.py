@@ -15,10 +15,9 @@ from nltk.stem import WordNetLemmatizer
 lem = WordNetLemmatizer()
 
 
-nltk.data.path.append("C:\\Users\\PCLP\\AppData\\Roaming\\nltk_data")
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
+nltk.download('punkt', quiet=True)
+nltk.download('stopwords', quiet=True)
+nltk.download('wordnet', quiet=True)
 stop_words = stopwords.words('english')
 
 
@@ -111,7 +110,9 @@ class Col_Structure:
             
             
         df = pd.DataFrame(updated_list)
-        df.to_csv("E:\\For_Job\\Blackcoffer\\Code\\Notebook\\data\\Output.csv")
+        output_dir = 'Notebook/data'
+        os.makedirs(output_dir, exist_ok=True)
+        df.to_csv(os.path.join(output_dir, "Output.csv"), index=False)
         
         return df
             

@@ -8,12 +8,9 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 lem = WordNetLemmatizer()
-nltk.data.path.append("C:\\Users\\PCLP\\AppData\\Roaming\\nltk_data")
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
-
-#C:\Users\PCLP\AppData\Roaming\nltk_data
+nltk.download('punkt', quiet=True)
+nltk.download('stopwords', quiet=True)
+nltk.download('wordnet', quiet=True)
 
 stop_words = stopwords.words('english')
 
@@ -21,27 +18,27 @@ stop_words = stopwords.words('english')
 class Analysis:
     
     
-    def StopWords_data(self,file_path='E:\\For_Job\\Blackcoffer\\StopWords\\'):
-        stopword_auditor=open(f'{file_path}\\StopWords_Auditor.txt' ,'r',encoding='ISO-8859-1')
-        StopWords_Currencies=open(f'{file_path}\\StopWords_Currencies.txt' ,'r',encoding='ISO-8859-1')
-        StopWords_DatesandNumbers=open(f'{file_path}\\StopWords_DatesandNumbers.txt' ,'r',encoding='ISO-8859-1')
-        StopWords_Generic=open(f'{file_path}\\StopWords_Generic.txt' ,'r',encoding='ISO-8859-1')
-        StopWords_GenericLong=open(f'{file_path}\\StopWords_GenericLong.txt' ,'r',encoding='ISO-8859-1')
-        StopWords_Geographic=open(f'{file_path}\\StopWords_Geographic.txt' ,'r',encoding='ISO-8859-1')
-        StopWords_Names=open(f'{file_path}\\StopWords_Names.txt' ,'r',encoding='ISO-8859-1')
+    def StopWords_data(self, file_path='StopWords'):
+        stopword_auditor = open(os.path.join(file_path, 'StopWords_Auditor.txt'), 'r', encoding='ISO-8859-1')
+        StopWords_Currencies = open(os.path.join(file_path, 'StopWords_Currencies.txt'), 'r', encoding='ISO-8859-1')
+        StopWords_DatesandNumbers = open(os.path.join(file_path, 'StopWords_DatesandNumbers.txt'), 'r', encoding='ISO-8859-1')
+        StopWords_Generic = open(os.path.join(file_path, 'StopWords_Generic.txt'), 'r', encoding='ISO-8859-1')
+        StopWords_GenericLong = open(os.path.join(file_path, 'StopWords_GenericLong.txt'), 'r', encoding='ISO-8859-1')
+        StopWords_Geographic = open(os.path.join(file_path, 'StopWords_Geographic.txt'), 'r', encoding='ISO-8859-1')
+        StopWords_Names = open(os.path.join(file_path, 'StopWords_Names.txt'), 'r', encoding='ISO-8859-1')
         
         return stopword_auditor,StopWords_Currencies,StopWords_DatesandNumbers,StopWords_Generic,StopWords_GenericLong,StopWords_Geographic,StopWords_Names
     
     
-    def MasterDictionar_data(self,file_path='E:\\For_Job\\Blackcoffer\\MasterDictionary'):
+    def MasterDictionar_data(self, file_path='MasterDictionary'):
         
         # Negative Dictionary 
-        file_neg = open(f'{file_path}\\negative-words.txt' ,'r',encoding='ISO-8859-1')
+        file_neg = open(os.path.join(file_path, 'negative-words.txt'), 'r', encoding='ISO-8859-1')
         file_neg.seek(0)
         neg_split = file_neg.read().split()
         
         # Positive Dictionary 
-        file_pos = open(f'{file_path}\\positive-words.txt' ,'r',encoding='ISO-8859-1')
+        file_pos = open(os.path.join(file_path, 'positive-words.txt'), 'r', encoding='ISO-8859-1')
         file_pos.seek(0)
         pos_split = file_pos.read().split()
         
