@@ -1,6 +1,6 @@
 # Text Analysis by using Python and machine learning Lib NLTK 
 
-#   Objectie 
+#   Objective 
 The objective of this assignment is to extract textual data articles from the given URL and perform text analysis to compute variables that are explained below. 
 
 Here in this we need to extract the data from the given link and and save those data into the csv file we need to Proceed some analysis on top of the  extracted data like extraxt number of words , number of sentenses , postive count and negative count etc 

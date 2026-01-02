@@ -3,6 +3,7 @@ numpy
 nltk
 flask
 bs4
-urlopen
+requests
+openpyxl
 
 -e .
